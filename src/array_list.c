@@ -1,4 +1,5 @@
 #include "array_list.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,9 +32,10 @@ int array_list_push(struct ArrayList* list, int element){
     unsigned int data_mem_size = list->length * sizeof(int);
     memcpy(data, list->data, data_mem_size);
 
+    free(list->data);
     list->data = data;
-    list->capacity = new_capacity;
 
+    list->capacity = new_capacity;
     list->data[list->length] = element;
     list->length++;
 
@@ -42,8 +44,54 @@ int array_list_push(struct ArrayList* list, int element){
   return -1;
 }
 
+int array_list_push_at(struct ArrayList* list, int element, int position){
+  if(list->capacity > list->length){
+    int temp = element;
+    for(int i = position; i<list->length+1; i++){
+      swap(&list->data[i], &temp);
+    }
+    list->length++;
+    return 1;
+  }
+  else{
+    unsigned int new_capacity = list->capacity + (list->capacity/2);
+    int* data = (int*)calloc(new_capacity, sizeof(int));
+    if(!data){
+      return -1;
+    }
+
+    unsigned int prefix_mem_size = position * sizeof(int);
+    unsigned int suffix_mem_size = (list->length - position) * sizeof(int);
+
+    memcpy(data, list->data, prefix_mem_size);
+    data[position] = element;
+    memcpy(&data[position+1], &list->data[position], suffix_mem_size);
+
+    free(list->data);
+    list->data = data;
+
+    list->data = data;
+    list->capacity = new_capacity;
+    list->length++;
+
+    return 2;
+  }
+
+  return -1;
+}
+
 int array_list_pop(struct ArrayList* list){
   int element = list->data[list->length-1];
+  list->length--;
+
+  return element;
+}
+int array_list_remove_at(struct ArrayList* list, int position){
+  int element = list->data[position];
+  for(int i = position; i<list->length-1; i++){
+    list->data[i] = list->data[i+1];
+  }
+  list->data[list->length-1] = 0;
   list->length--;
 
   return element;
