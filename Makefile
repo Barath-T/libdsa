@@ -6,13 +6,14 @@ OBJ=obj
 INC=include
 SRCS=$(wildcard $(SRC)/*.c)
 OBJS=$(patsubst $(SRC)/%.c,$(OBJ)/%.o, $(SRCS))
-TESTS=tests/main.c
+TESTS=test/main.c
 
 BINDIR=bin
 SO=$(BINDIR)/libdsa.so
 TESTBIN=$(BINDIR)/test
 
 all: $(SO)
+
 test: $(TESTBIN)
 	LD_LIBRARY_PATH=$(BINDIR) ./$(TESTBIN)
 
